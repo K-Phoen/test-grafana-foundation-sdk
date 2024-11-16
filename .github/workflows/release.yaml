@@ -1,0 +1,49 @@
+name: Release
+on:
+  workflow_dispatch: ~
+
+env:
+  COG_VERSION: 0.0.2
+
+# Grant GITHUB_TOKEN the permissions required to make a release
+permissions:
+  contents: read
+  pull-requests: write # this script currently opens PRs
+
+# Allow only one concurrent release, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these releases to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    name: Build SDK and release
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download cog
+        run: |
+          mkdir -p "${HOME}/.local/bin/"
+          wget https://github.com/grafana/cog/releases/download/v${COG_VERSION}/cog_Linux_x86_64.tar.gz
+          tar -xzf cog_Linux_x86_64.tar.gz
+          mv cog "${HOME}/.local/bin/cog"
+          chmod +x "${HOME}/.local/bin/cog"
+          echo "${HOME}/.local/bin" >> $GITHUB_PATH
+
+      - name: Run the release script
+        run: |
+          git config --local user.name 'github-actions[bot]'
+          git config --local user.email 'github-actions[bot]@users.noreply.github.com'
+          
+          ./scripts/release-version.sh next
+        env:
+          LOG_LEVEL: '7' # debug
+          DRY_RUN: 'no'
+          GOGC: 'off'
