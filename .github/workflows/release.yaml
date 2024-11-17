@@ -1,6 +1,17 @@
 name: Release
 on:
-  workflow_dispatch: ~
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release, or "all" to release all supported versions.'
+        required: true
+        default: 'all'
+        type: string
+      dryRun:
+        description: 'Dry-run mode runs the release pipeline without pushing its results.'
+        required: false
+        default: false
+        type: boolean
 
 env:
   COG_VERSION: 0.0.2
@@ -42,10 +53,15 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "git@github.com:"
-          
-          ./scripts/release-version.sh next
+
+          if [ "${VERSION_TARGET}" == "all" ]; then
+            ./scripts/release-all.sh
+          else
+            ./scripts/release-version.sh "${VERSION_TARGET}"
+          fi
         env:
           LOG_LEVEL: '7' # debug
-          DRY_RUN: 'no'
           GOGC: 'off'
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # to be used by `gh`
+          DRY_RUN: ${{ inputs.dryRun && "yes" || "no" }}
+          VERSION_TARGET: ${{ inputs.version }}
