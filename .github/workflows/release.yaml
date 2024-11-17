@@ -60,7 +60,7 @@ jobs:
             ./scripts/release-version.sh "${VERSION_TARGET}"
           fi
         env:
-          TERM: 'dumb'
+          TERM: 'xterm'
           LOG_LEVEL: '7' # debug
           GOGC: 'off'
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # to be used by `gh`
