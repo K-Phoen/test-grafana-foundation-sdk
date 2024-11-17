@@ -7,8 +7,8 @@ env:
 
 # Grant GITHUB_TOKEN the permissions required to make a release
 permissions:
-  contents: read
-  pull-requests: write # this script currently opens PRs
+  contents: write # to push new branches
+  pull-requests: write # to open PRs
 
 # Allow only one concurrent release, skipping runs queued between the run in-progress and latest queued.
 # However, do NOT cancel in-progress runs as we want to allow these releases to complete.
