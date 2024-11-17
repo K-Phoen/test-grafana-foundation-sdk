@@ -48,3 +48,4 @@ jobs:
           LOG_LEVEL: '7' # debug
           DRY_RUN: 'no'
           GOGC: 'off'
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # to be used by `gh`
